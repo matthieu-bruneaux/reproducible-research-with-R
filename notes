@@ -1,0 +1,81 @@
+People interested:
+------------------
+
+(Shihab)
+Tutku
+Heidi
+Vero
+Sanna O
+Roland
+Ksenia
+Silva
+Vicky
+Megha
+Irma
+
+
+
+Wednesday 12
+------------
+
+* Introduction:
+
+Reproducibility, cf R blogger reference and software carpentry
+
+Data persistence, Script, disposable output
+
+Report : intermediate (disposable results BUT also comments and thoughts)
+
+What is version control?
+
+what is report generation?
+
+* Version control:
+
+Why it is useful, how it can help
+
+Talk a bit about shared repositories and collaborative projects, but focus
+on single-user approach
+
+
+
+Wednesday 19
+------------
+
+* Automatic report generation
+
+* Markdown, html reports
+
+* Latex? More complex to introduce
+
+
+
+* Figures with make?
+
+
+
+Wrapping it up
+--------------
+
+* Proposing a project directory structure
+(several to show that tere are alternatives)
+
+* What is version controlled, what is not
+
+* Automatic report generation, documentation
+
+* Figures with make
+
+
+
+
+Sources
+-------
+
+
+Nice R code
+
+Software Carpentry
+
+Carl Boettinger
+

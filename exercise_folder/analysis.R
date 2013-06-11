@@ -1,10 +1,20 @@
+#-----------------------
+# Load the R source code
+#-----------------------
+
+
+
+source("R_source/source.R")
+
+
+
 #------------------
 # Load the CTD data
 #------------------
 
 
 
-data = read.table("../data/CTD_Baltic_Sea_1975-2013.csv", sep = ",", header = T, fill = T)
+data = read.table("data/CTD_Baltic_Sea_1975-2013.csv", sep = ",", header = T, fill = T)
 
 # Let's have a look at what the data frame contains.
 
@@ -54,10 +64,31 @@ head(data)
 
 
 
-bathy_full = read.table("../data/iowtopo2_rev03.dat", header = T)
+bathy_full = read.table("data/iowtopo2_rev03.dat", header = T)
 
 # The topography dataset is big. We can take a subset of it to make plots faster.
 
-bathy = bathy_full[seq(1, nrow(bathy_full), 100), ]
+bathy = decreaseGridResolution(bathy_full, 3)
 
+
+
+#------------------------------------
+# Filter the data for a specific area
+#------------------------------------
+
+
+
+x_lon_limits = c(16.1, 32.5) # Gulf of Finland and Aland Islands
+
+y_lat_limits = c(56.3, 61.7)
+
+data = extractAreaByCoordinates(data, x_lon_limits, y_lat_limits)
+
+bathy = extractAreaByCoordinates(bathy, x_lon_limits, y_lat_limits)
+
+
+
+#-----------------------------------------
+# Draw a topographic map of the Baltic Sea
+#-----------------------------------------
 

@@ -1,0 +1,79 @@
+\documentclass{beamer}
+
+
+
+% packages
+%---------
+
+\usepackage{tikz}
+
+\usetikzlibrary{arrows, shapes}
+
+
+
+% theming
+%--------
+
+\usetheme{Madrid}
+
+\usecolortheme{orchid}
+
+\usefonttheme{structurebold}
+
+\setbeamercovered{transparent}
+
+
+
+% information
+%------------
+
+\title{Reproducible research with R \protect\\ 
+       }
+
+
+
+% document
+%---------
+
+\begin{document}
+
+
+
+% title
+%------
+
+\begin{frame}
+    
+    \titlepage
+    
+\end{frame}
+    
+    
+
+\section*{Outline}
+%-----------------
+
+\begin{frame}{Part I}
+
+    \tableofcontents[part=1]
+        
+\end{frame}
+
+\begin{frame}{Part II}
+
+    \tableofcontents[part=2]
+        
+\end{frame}
+
+
+\input{R_reproducible_research_part_I}
+%-------------------------------------
+
+
+
+\input{R_reproducible_research_part_II}
+%--------------------------------------
+
+
+
+\end{document}

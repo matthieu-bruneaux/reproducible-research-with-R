@@ -1,0 +1,263 @@
+\documentclass{article}
+
+
+
+\usepackage[margin=3.5cm]{geometry}
+
+\usepackage[pdfborder={0 0 0}]{hyperref}
+
+
+
+\title{Effect of lakritsi on agressiveness: a Moomin perspective}
+
+\author{Matthieu Bruneaux}
+
+
+
+\begin{document}
+
+\SweaveOpts{concordance=TRUE}
+
+
+
+\maketitle
+
+
+\tableofcontents
+
+\listoffigures
+
+\listoftables
+
+
+
+\section{Context of the study}
+%-----------------------------
+
+
+
+Haribo et al. have suggested a correlation between the 
+consumption of \textbf{liquorice} and \textbf{agressive behaviour}, but 
+their previous study on Smurfs (\textit{Schtroumpfus peyoii}) remained
+inconclusive.
+
+Haribo et al. study had 3 major flaws:
+
+\begin{itemize}
+
+  \item they did not describe how they measured agressiveness
+  \item most Smurfs escaped before the end of the experiment
+  \item Smurfs have a low expression level of liquorice receptors, as 
+  was later evidenced:
+  
+  \begin{enumerate}
+  
+    \item in the brain
+    \item in the liver
+    \item in the muscle
+    
+  \end{enumerate}
+
+\end{itemize}
+
+
+
+\section{Experimental design}
+%----------------------------
+
+
+
+We decided to test their hypothesis using a dataset collected on 
+Moomins and other related characters. Our approach includes:
+
+\begin{itemize}
+  
+  \item male and female individuals from different species
+  \item different levels of liquorice consumption among 
+  individuals
+  \item paintball activity as a proxy for agressiveness
+
+\end{itemize}
+
+
+
+\section{Individuals used in this study}
+%---------------------------------------
+
+
+
+<<label=loadMoominData>>=
+# Load Moomin data
+moomin = read.table("../data/moomin_data", header = T, sep ="\t")
+moomin
+@
+
+
+
+\section{Results}
+%----------------
+
+
+
+\subsection{Paintball activity}
+%------------------------------
+
+
+
+For each individual, the number of balls used during a 180min 
+paintball game was monitored.
+
+
+
+<<label=loadPaintballData>>=
+# Load paintball data
+paintball = read.table("../data/paintball_data", header = T, 
+                       sep ="\t")
+head(paintball)
+@
+
+
+
+\subsection{Example of activity: Sniff (Nipsu)}
+%----------------------------------------------
+
+
+
+This plot shows the amount of balls used by Sniff during the
+game.
+
+
+
+<<label=plotSniffActivity, fig=TRUE, include=TRUE>>=
+# Extract Sniff activity
+sniff_activity = subset(paintball, paintball$user == "Sniff")
+plot(sniff_activity$time.min, sniff_activity$balls.used, type = "l")
+@
+
+
+
+The next plot uses `ggplot2` for fancier graphics.
+
+
+
+<<label=plotSniffActivity-ggplot2, fig=TRUE, include=TRUE>>=
+library(ggplot2)
+graph = ggplot(sniff_activity, aes(x = time.min, y = balls.used)) +
+     geom_line()
+print(graph)
+@
+
+
+
+\subsection{Activity of all individuals}
+%---------------------------------------
+
+
+
+The next plot uses the data for all \Sexpr{nrow(paintball)} 
+records in the paintball tables.
+
+
+
+<<label=plotActivityAll, fig=TRUE, include=TRUE, width = 8, height = 6>>=
+graph = ggplot(paintball, aes(x = time.min, y = balls.used, col = user)) +
+   geom_line()
+print(graph)
+@
+
+
+
+\subsection{Effect of lakritsi on paintball activity}
+%----------------------------------------------------
+
+
+
+We have an estimation of the average lakritsi consumption per
+day for each individual. Consumption ranges from 
+\Sexpr{min(moomin$liquorice.kg.day)} to 
+\Sexpr{max(moomin$liquorice.kg.day)} kg per day.
+
+
+
+<<label=mergeTables, echo=FALSE>>=
+all_data = merge(moomin, paintball, by.x = "english", 
+                 by.y = "user")
+@
+
+
+
+<<label=calculateTotalNumberBalls, echo = FALSE>>=
+total.n.balls = vector()
+for (individual in moomin$english) {
+  total = max(subset(paintball, 
+                     paintball$user == individual)$balls.used)
+  total.n.balls = c(total.n.balls, total)
+}
+summary_moomin = data.frame(moomin$english,
+                            moomin$liquorice.kg.day,
+                            total.n.balls)
+names(summary_moomin) = c("individual", "liquorice.kg.day",
+                          "balls.game")
+@
+
+
+
+The next plot uses color-coding to depict the average consumption
+of lakritsi in kg/day.
+
+
+
+<<label=plotActivity-col-lakritsi, fig=TRUE, width = 8, height = 5>>=
+print(ggplot(all_data, aes(x = time.min, y = balls.used, 
+                           group = english)) +
+      geom_line(aes(col = liquorice.kg.day)))
+@
+
+
+
+We can also look at the total number of balls used in relation to 
+the liquorice consumption.
+
+
+
+<<label=plotTotalBallsLiquorice, fig=TRUE, width = 8, height = 5>>=
+print(ggplot(summary_moomin, aes(x = liquorice.kg.day, 
+                                 y = balls.game,
+                                 col = individual)) + 
+      geom_point())
+@
+
+
+
+The Spearman's rho test gives:
+
+
+
+<<label=SpearmanTest>>=
+a = cor.test(summary_moomin$liquorice.kg.day, 
+         summary_moomin$balls.game,
+         method = "spearman")
+a$p.value
+a$estimate
+@
+
+
+
+\section{Comparison of the studies}
+%----------------------------------
+
+
+
+<<label=comparison, results = tex>>=
+library(xtable)
+theirs = c("Smurfs", "unknown proxy", "potential conflict of 
+interest")
+ours = c("Moomins", "paintball activity", "no conflict of 
+interest")
+comparison = data.frame(Haribo.et.al = theirs, our.study =ours)
+print(xtable(comparison, caption = "Comparison of the studies"))
+@
+
+
+
+\end{document}

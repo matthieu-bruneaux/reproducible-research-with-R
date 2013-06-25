@@ -1,0 +1,180 @@
+Effect of lakritsi on agressiveness: a Moomin perspective
+=========================================================
+
+
+
+Context of the study
+--------------------
+
+
+
+Haribo *et al.* have suggested a correlation between the 
+consumption of **liquorice** and **agressive behaviour**, but 
+their previous study on Smurfs (*Schtroumpfus peyoii*) remained inconclusive.
+
+Haribo *et al.* study had 3 major flaws:
+- they did not describe how they measured agressiveness
+- most Smurfs escaped before the end of the experiment
+- Smurfs have a low expression level of liquorice receptors, as 
+was later evidenced:
+    1. in the brain
+    2. in the liver
+    3. in the muscle
+
+
+
+Experimental design
+-------------------
+
+
+
+We decided to test their hypothesis using a dataset collected on Moomins and
+other related characters. Our approach includes:
+- male and female individuals from different species
+- different levels of liquorice consumption among individuals
+- paintball activity as a proxy for agressiveness
+
+
+
+Individuals used in this study
+------------------------------
+
+
+
+```{r loadMoominData}
+# Load Moomin data
+moomin = read.table("../data/moomin_data", header = T, sep ="\t")
+moomin
+```
+
+
+
+Results
+-------
+
+
+
+### Paintball activity
+
+
+
+For each individual, the number of balls used during a 180min 
+paintball game was monitored.
+
+```{r loadPaintballData}
+# Load paintball data
+paintball = read.table("../data/paintball_data", header = T, 
+                       sep ="\t")
+head(paintball)
+```
+
+
+
+### Example of activity: Sniff (Nipsu)
+
+
+
+This plot shows the amount of balls used by Sniff during the
+game.
+
+```{r plotSniffActivity}
+# Extract Sniff activity
+sniff_activity = subset(paintball, paintball$user == "Sniff")
+plot(sniff_activity$time.min, sniff_activity$balls.used, type = "l")
+```
+
+The next plot uses `ggplot2` for fancier graphics.
+
+```{r plotSniffActivity.ggplot2}
+library(ggplot2)
+ggplot(sniff_activity, aes(x = time.min, y = balls.used)) +
+   geom_line()
+```
+
+
+
+### Activity of all individuals
+
+
+
+The next plot uses the data for all `r nrow(paintball)` 
+records in the paintball tables.
+
+```{r plotActivityAll, fig.width = 8, fig.height = 6}
+ggplot(paintball, aes(x = time.min, y = balls.used, col = user)) +
+   geom_line()
+```
+
+
+
+### Effect of lakritsi on paintball activity
+
+We have an estimation of the average lakritsi consumption per
+day for each individual. Consumption ranges from 
+`r min(moomin$liquorice.kg.day)` to 
+`r max(moomin$liquorice.kg.day)` kg per day.
+
+
+
+```{r mergeTables, echo = FALSE}
+all_data = merge(moomin, paintball, by.x = "english", 
+                 by.y = "user")
+```
+
+
+
+```{r calculateTotalNumberBalls, echo = FALSE}
+total.n.balls = vector()
+for (individual in moomin$english) {
+  total = max(subset(paintball, 
+                     paintball$user == individual)$balls.used)
+  total.n.balls = c(total.n.balls, total)
+}
+summary_moomin = data.frame(moomin$english,
+                            moomin$liquorice.kg.day,
+                            total.n.balls)
+names(summary_moomin) = c("individual", "liquorice.kg.day",
+                          "balls.game")
+```
+
+
+
+The next plot uses color-coding to depict the average consumption
+of lakritsi in kg/day.
+
+```{r plotActivity.col.lakritsi, fig.width = 8, fig.height = 5}
+ggplot(all_data, aes(x = time.min, y = balls.used, group = english)) +
+   geom_line(aes(col = liquorice.kg.day))
+```
+
+
+
+We can also look at the total number of balls used in relation to the
+liquorice consumption.
+
+```{r plotTotalBallsLiquorice, fig.width = 8, fig.height = 5}
+ggplot(summary_moomin, aes(x = liquorice.kg.day, y = balls.game,
+                           col = individual))+ geom_point()
+```
+
+
+
+The Spearman's rho test gives:
+
+```{r SpearmanTest}
+cor.test(summary_moomin$liquorice.kg.day, summary_moomin$balls.game,
+         method = "spearman")
+```
+
+
+
+Comparison of the studies
+-------------------------
+
+
+
+Haribo *et al.* | our study
+-----|-----
+Smurfs | Moomins
+unknown proxy | paintball activity
+potential conflict of interest | no conflict of interest
